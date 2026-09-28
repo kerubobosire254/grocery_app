@@ -49,14 +49,6 @@ I built it because I was the person with the problem. I'm the user, the tester a
 | Hosting | GitHub Pages |
 | Version control | Git and GitHub |
 
-**Design choices**
-
-- [Why a PWA and not a native app?]
-- [Why did you keep your data where you did?]
-- [Anything you'd add next?]
-
----
-
 ## Install it on your phone
 
 Stocked is a PWA, so you can add it to your home screen and open it like a normal app.
