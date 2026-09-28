@@ -1,1 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stocked</title>
+<style>
+/* ---------- 1. DESIGN TOKENS ---------- */
+:root{
+  --bg:#fbeeea; --bg2:#f6d9d3; --card:#fffafa; --ink:#1b1613; --muted:#98736f; --accent:#b96f70; --line:#f0d3ce; --done:#c9aaa6; --blush:#f8dcd6; --dot:rgba(185,111,112,.22);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#1d1814;--card:#28211b;--ink:#f3e9dc;--muted:#b09a86;--accent:#c99a72;--line:#3b3129;--done:#6f6152;--bg2:#1d1814;--blush:#33291f;--dot:rgba(201,154,114,.10);}
+}
+:root[data-theme="dark"]{--bg:#1d1814;--card:#28211b;--ink:#f3e9dc;--muted:#b09a86;--accent:#c99a72;--line:#3b3129;--done:#6f6152;--bg2:#1d1814;--blush:#33291f;--dot:rgba(201,154,114,.10);}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(circle at 1px 1px,var(--dot) 1.4px,transparent 1.9px),linear-gradient(180deg,var(--bg),var(--bg2));background-size:24px 24px,100% 100%;color:var(--ink);font:16px/1.5 "Avenir Next",Avenir,"Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 60px}
 
+/* ---------- 2. HEADER ---------- */
+header{text-align:center;padding:10px 0 6px}
+header svg.bow{width:112px;height:auto;display:block;margin:0 auto 4px}
+h1{font:italic 500 44px Georgia,"Times New Roman",serif;letter-spacing:.02em;margin:0;line-height:1.1}
+.tag{color:var(--muted);font-size:14px;margin:0}
+
+.months{display:flex;align-items:center;justify-content:center;gap:14px;margin:18px 0 14px}
+.months button{width:38px;height:38px;border-radius:50%;border:0;background:var(--blush,var(--card));color:var(--ink);font-size:18px;cursor:pointer}
+.months h2{font:600 22px Georgia,serif;margin:0;min-width:170px;text-align:center}
+
+/* ---------- 3. TOTALS ---------- */
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.totals div{background:var(--blush,var(--card));border-radius:22px;padding:12px 8px;text-align:center}
+.totals small{display:block;color:var(--muted);font-size:12px}
+.totals b{font-size:16px}
+
+/* ---------- 4. FORM + USUALS ---------- */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(185,111,112,.16)}
+.panel h3{margin:0 0 10px;font:600 17px Georgia,serif}
+form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+form .full{grid-column:1/-1}
+input[type=text],input[type=number],select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+label.chk{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px}
+.btn{border:0;border-radius:999px;padding:11px 18px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.btn.soft{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+details summary{cursor:pointer;font:600 17px Georgia,serif;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:" ▾";color:var(--accent)}
+.usual{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.usual span{flex:1}
+.usual em{color:var(--muted);font-style:normal;font-size:13px}
+.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 8px}
+
+/* ---------- 5. THE LIST ---------- */
+.cat{margin-bottom:16px}
+.cat h3{font:italic 600 19px Georgia,serif;margin:0 0 6px;padding-bottom:4px;border-bottom:1.5px solid var(--accent)}
+.item{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line)}
+.item input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.item .name{flex:1}
+.item .price{color:var(--muted);white-space:nowrap}
+.item.done .name,.item.done .price{text-decoration:line-through;color:var(--done)}
+.empty{text-align:center;color:var(--muted);padding:28px 10px;position:relative}
+.empty svg{width:70px;display:block;margin:0 auto 6px}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+.printhead{display:none}
+
+/* ---------- 6. PRINT:---------- */
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#fbeeea;--bg2:#f6d9d3;--card:#fffafa;--ink:#1b1613;--muted:#7a5a56;--accent:#b96f70;--line:#f0d3ce;--done:#b59a96;--blush:#f8dcd6;--dot:rgba(185,111,112,.22)}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .noprint,.months button,.x,.item button{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .printhead{display:block}
+  .cat{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <!-- black bow -->
+  <svg class="bow" viewBox="0 0 120 64" aria-hidden="true">
+    <path d="M60 32 Q40 4 14 6 Q2 32 14 58 Q40 60 60 32 Z" fill="#1b1613"/>
+    <path d="M60 32 Q80 4 106 6 Q118 32 106 58 Q80 60 60 32 Z" fill="#1b1613"/>
+    <path d="M56 30 Q38 14 20 14" stroke="#5a4a40" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+    <path d="M64 30 Q82 14 100 14" stroke="#5a4a40" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+    <path d="M54 40 Q38 56 34 62 L46 60 Q52 52 58 42 Z" fill="#1b1613"/>
+    <path d="M66 40 Q82 56 86 62 L74 60 Q68 52 62 42 Z" fill="#1b1613"/>
+    <rect x="50" y="22" width="20" height="20" rx="9" fill="#2b221d"/>
+  </svg>
+  <h1>Stocked</h1>
+  <p class="tag">Your monthly shopping list</p>
+</header>
+
+<div class="months noprint">
+  <button id="prev" aria-label="Previous month">‹</button>
+  <h2 id="monthLabel"></h2>
+  <button id="next" aria-label="Next month">›</button>
+</div>
+<h2 id="printMonth" class="printhead" style="text-align:center;font:600 22px Georgia,serif;margin:10px 0"></h2>
+
+<div class="totals">
+  <div><small>Estimated total</small><b id="tTotal"></b></div>
+  <div><small>Bought</small><b id="tBought"></b></div>
+  <div><small>Remaining</small><b id="tLeft"></b></div>
+</div>
+
+<!-- My usual items -->
+<div class="panel noprint">
+  <details id="usualsBox">
+    <summary>My usual items</summary>
+    <div id="usualsList" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="addUsuals" type="button">Add selected to this month</button>
+    </div>
+  </details>
+</div>
+
+<!-- Add / edit item -->
+<div class="panel noprint">
+  <h3 id="formTitle">Add something new</h3>
+  <form id="itemForm" autocomplete="off">
+    <input class="full" type="text" id="fName" placeholder="Item name, e.g. Eggs" required maxlength="60">
+    <select id="fCat"></select>
+    <input type="number" id="fPrice" placeholder="Price (KSh)" min="0" step="1" inputmode="numeric">
+    <label class="chk full"><input type="checkbox" id="fUsual"> Save as one of my usual items</label>
+    <div class="row full">
+      <button class="btn" type="submit" id="fSubmit">Add to list</button>
+      <button class="btn soft" type="button" id="fCancel" hidden>Cancel</button>
+    </div>
+  </form>
+</div>
+
+<div id="list"></div>
+
+<div class="foot noprint">
+  <button class="btn soft" id="clearBought" type="button">Clear ticked items</button>
+  <button class="btn" id="printBtn" type="button">Print list</button>
+</div>
+
+</div>
+
+<script>
+
+// ---------- 1. DATA ----------
+const KEY = "Stocked-v1";              
+const CATS = [
+  { id: "produce",   emoji: "🥬", name: "Fresh Produce" },
+  { id: "staples",   emoji: "🍚", name: "Staples" },
+  { id: "condiments",emoji: "🫙", name: "Condiments" },
+  { id: "household", emoji: "🏠", name: "Household" },
+  { id: "personal",  emoji: "🧴", name: "Personal Care" },
+  { id: "other",     emoji: "🛍️", name: "Other Purchases" }
+];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+const DEFAULT_USUALS = [
+  // Fresh Produce
+  { name: "Tomatoes", cat: "produce", price: 0 }, { name: "Onions", cat: "produce", price: 0 },
+  { name: "Spinach", cat: "produce", price: 0 }, { name: "Sukuma wiki", cat: "produce", price: 0 },
+  { name: "Avocados", cat: "produce", price: 0 }, { name: "Fruits", cat: "produce", price: 0 },
+  { name: "Eggs", cat: "produce", price: 0 },
+  // Staples
+  { name: "Rice", cat: "staples", price: 0 }, { name: "Cooking flour", cat: "staples", price: 0 },
+  { name: "Wheat flour", cat: "staples", price: 0 }, { name: "Pasta", cat: "staples", price: 0 },
+  { name: "Cereal", cat: "staples", price: 0 }, { name: "Sugar", cat: "staples", price: 0 },
+  { name: "Salt", cat: "staples", price: 0 }, { name: "Porridge flour", cat: "staples", price: 0 },
+  // Condiments
+  { name: "Cooking oil", cat: "condiments", price: 0 }, { name: "Tomato sauce", cat: "condiments", price: 0 },
+  { name: "Bread spread", cat: "condiments", price: 0 }, { name: "Peanut butter", cat: "condiments", price: 0 },
+  // Household
+  { name: "Tissue", cat: "household", price: 0 }, { name: "Household soap", cat: "household", price: 0 },
+  { name: "Dishwashing soap", cat: "household", price: 0 }, { name: "Garbage bags", cat: "household", price: 0 },
+  // Personal Care
+  { name: "Toothpaste", cat: "personal", price: 0 }, { name: "Shampoo", cat: "personal", price: 0 },
+  { name: "Conditioner", cat: "personal", price: 0 }, { name: "Shower gel", cat: "personal", price: 0 },
+  { name: "Deodorant", cat: "personal", price: 0 }, { name: "Body oil", cat: "personal", price: 0 },
+  { name: "Lotion", cat: "personal", price: 0 }
+];
+
+// state = everything the app needs to remember
+let state = load();
+let editingId = null;                  // which item we're editing (null = adding new)
+
+function monthKey(d){ return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0"); }
+
+function load(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY));
+    if (saved && saved.lists) {
+      // one-time upgrade: add the new default usuals to lists saved by an older version
+      if ((saved.usualsV || 1) < 2) {
+        const have = new Set(saved.usuals.map(u => u.name.toLowerCase()));
+        DEFAULT_USUALS.forEach(u => { if (!have.has(u.name.toLowerCase())) saved.usuals.push({ ...u }); });
+        saved.usualsV = 2;
+      }
+      return saved;
+    }
+  } catch (e) { /* storage empty or blocked: fall through to a fresh start */ }
+  return { current: monthKey(new Date()), lists: {}, usuals: DEFAULT_USUALS.map(u => ({ ...u })), usualsV: 2 };
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+}
+
+// ---------- 2. SMALL HELPERS ----------
+const $ = id => document.getElementById(id);
+const ksh = n => "KSh " + Math.round(n || 0).toLocaleString("en-KE");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const items = () => (state.lists[state.current] ||= []);   // this month's list (creates it if missing)
+
+function monthLabel(key){
+  const [y, m] = key.split("-").map(Number);
+  return MONTHS[m-1] + " " + y;
+}
+function shiftMonth(step){
+  const [y, m] = state.current.split("-").map(Number);
+  state.current = monthKey(new Date(y, m-1+step, 1));
+  cancelEdit(); save(); render();
+}
+
+// ---------- 3. RENDER: draw the screen from state ----------
+function render(){
+  $("monthLabel").textContent = monthLabel(state.current);
+  $("printMonth").textContent = "Rosari · " + monthLabel(state.current);
+
+  // totals
+  const list = items();
+  const total  = list.reduce((s,i) => s + i.price, 0);
+  const bought = list.filter(i => i.bought).reduce((s,i) => s + i.price, 0);
+  $("tTotal").textContent  = ksh(total);
+  $("tBought").textContent = ksh(bought);
+  $("tLeft").textContent   = ksh(total - bought);
+
+  // the list, grouped by category
+  const box = $("list");
+  if (!list.length) {
+    box.innerHTML = '<div class="empty">Nothing on this month\'s list yet.<br>Add your usuals or a new item above.</div>';
+  } else {
+    box.innerHTML = CATS.map(cat => {
+      const inCat = list.filter(i => i.cat === cat.id);
+      if (!inCat.length) return "";
+      const sub = inCat.reduce((s,i) => s + i.price, 0);
+      return `<section class="cat"><h3>${cat.emoji} ${cat.name} <span style="float:right;font:400 14px sans-serif;color:var(--muted)">${ksh(sub)}</span></h3>` +
+        inCat.map(i => `
+          <div class="item ${i.bought ? "done" : ""}">
+            <input type="checkbox" data-act="tick" data-id="${i.id}" ${i.bought ? "checked" : ""} aria-label="Bought ${esc(i.name)}">
+            <span class="name">${esc(i.name)}</span>
+            <span class="price">${ksh(i.price)}</span>
+            <button class="x" data-act="edit" data-id="${i.id}" aria-label="Edit ${esc(i.name)}">✎</button>
+            <button class="x" data-act="del" data-id="${i.id}" aria-label="Delete ${esc(i.name)}">✕</button>
+          </div>`).join("") + `</section>`;
+    }).join("");
+  }
+
+  // usual items panel (items already on this month's list are ticked off + disabled)
+  $("usualsList").innerHTML = CATS.map(cat => {
+    const rows = state.usuals.map((u, idx) => ({ u, idx })).filter(x => x.u.cat === cat.id);
+    if (!rows.length) return "";
+    return `<div style="margin-top:10px"><strong style="font:600 15px Georgia,serif">${cat.emoji} ${cat.name}</strong>` +
+      rows.map(({ u, idx }) => {
+        const already = list.some(i => i.name.toLowerCase() === u.name.toLowerCase());
+        return `<div class="usual">
+          <input type="checkbox" data-usual="${idx}" ${already ? "disabled" : ""} aria-label="${esc(u.name)}">
+          <span>${esc(u.name)} ${already ? "<em>(already added)</em>" : ""}</span>
+          <em>${u.price ? ksh(u.price) : ""}</em>
+          <button class="x" data-act="rmusual" data-idx="${idx}" aria-label="Remove ${esc(u.name)} from usuals">✕</button>
+        </div>`;
+      }).join("") + `</div>`;
+  }).join("") || '<p class="tag">No usual items yet. Tick “Save as one of my usual items” when adding.</p>';
+}
+
+// ---------- 4. ACTIONS: change state, save, redraw ----------
+function addItem(name, cat, price){
+  items().push({ id: Date.now() + Math.random().toString(16).slice(2), name, cat, price, bought: false });
+}
+function cancelEdit(){
+  editingId = null;
+  $("itemForm").reset();
+  $("formTitle").textContent = "Add something new";
+  $("fSubmit").textContent = "Add to list";
+  $("fCancel").hidden = true;
+}
+
+// form submit: add a new item OR save an edit
+$("itemForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("fName").value.trim();
+  const cat = $("fCat").value;
+  const price = Math.max(0, Number($("fPrice").value) || 0);
+  if (!name) return;
+
+  if (editingId) {
+    const it = items().find(i => i.id === editingId);
+    if (it) { it.name = name; it.cat = cat; it.price = price; }
+  } else {
+    addItem(name, cat, price);
+    if ($("fUsual").checked && !state.usuals.some(u => u.name.toLowerCase() === name.toLowerCase())) {
+      state.usuals.push({ name, cat, price });
+    }
+  }
+  cancelEdit(); save(); render();
+  $("fName").focus();
+});
+$("fCancel").addEventListener("click", cancelEdit);
+
+// one click listener for the whole list (called "event delegation")
+$("list").addEventListener("click", e => {
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  const id = btn.dataset.id;
+  if (btn.dataset.act === "del") {
+    state.lists[state.current] = items().filter(i => i.id !== id);
+  } else if (btn.dataset.act === "edit") {
+    const it = items().find(i => i.id === id);
+    editingId = id;
+    $("fName").value = it.name; $("fCat").value = it.cat; $("fPrice").value = it.price || "";
+    $("formTitle").textContent = "Edit item";
+    $("fSubmit").textContent = "Save changes";
+    $("fCancel").hidden = false;
+    $("fName").focus(); $("fName").scrollIntoView({ block: "center", behavior: "smooth" });
+    return;
+  }
+  save(); render();
+});
+$("list").addEventListener("change", e => {          // ticking a checkbox
+  if (e.target.dataset.act !== "tick") return;
+  const it = items().find(i => i.id === e.target.dataset.id);
+  if (it) it.bought = e.target.checked;
+  save(); render();
+});
+
+// usual items
+$("addUsuals").addEventListener("click", () => {
+  document.querySelectorAll("[data-usual]:checked").forEach(box => {
+    const u = state.usuals[Number(box.dataset.usual)];
+    if (u) addItem(u.name, u.cat, u.price);
+  });
+  save(); render();
+});
+$("usualsList").addEventListener("click", e => {
+  const b = e.target.closest("[data-act=rmusual]");
+  if (!b) return;
+  state.usuals.splice(Number(b.dataset.idx), 1);
+  save(); render();
+});
+
+// month arrows, clear ticked, print
+$("prev").addEventListener("click", () => shiftMonth(-1));
+$("next").addEventListener("click", () => shiftMonth(1));
+$("clearBought").addEventListener("click", () => {
+  state.lists[state.current] = items().filter(i => !i.bought);
+  save(); render();
+});
+$("printBtn").addEventListener("click", () => window.print());
+
+// ---------- 5. START ----------
+$("fCat").innerHTML = CATS.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join("");
+render();
+</script>
+</body>
+</html>
