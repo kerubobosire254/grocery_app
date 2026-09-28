@@ -4,9 +4,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rosari</title>
+<title>Stocked</title>
 <style>
-/* ---------- 1. DESIGN TOKENS (colours live here so light/dark/print can swap them) ---------- */
+/* ---------- 1. DESIGN TOKENS ---------- */
 :root{
   --bg:#fbeeea; --bg2:#f6d9d3; --card:#fffafa; --ink:#1b1613; --muted:#98736f; --accent:#b96f70; --line:#f0d3ce; --done:#c9aaa6; --blush:#f8dcd6; --dot:rgba(185,111,112,.22);
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
@@ -68,7 +68,7 @@ details summary::after{content:" ▾";color:var(--accent)}
 .foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
 .printhead{display:none}
 
-/* ---------- 6. PRINT: still looks like Rosari ---------- */
+/* ---------- 6. PRINT: still looks like Stocked---------- */
 @media print{
   :root,:root[data-theme="dark"]{--bg:#fbeeea;--bg2:#f6d9d3;--card:#fffafa;--ink:#1b1613;--muted:#7a5a56;--accent:#b96f70;--line:#f0d3ce;--done:#b59a96;--blush:#f8dcd6;--dot:rgba(185,111,112,.22)}
   html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -93,7 +93,7 @@ details summary::after{content:" ▾";color:var(--accent)}
     <path d="M66 40 Q82 56 86 62 L74 60 Q68 52 62 42 Z" fill="#1b1613"/>
     <rect x="50" y="22" width="20" height="20" rx="9" fill="#2b221d"/>
   </svg>
-  <h1>Rosari</h1>
+  <h1>Stocked</h1>
   <p class="tag">Your monthly shopping list</p>
 </header>
 
@@ -146,13 +146,9 @@ details summary::after{content:" ▾";color:var(--accent)}
 </div>
 
 <script>
-/* =====================================================================
-   ROSARI v1 — vanilla JavaScript
-   The whole app is: STATE -> render() -> user does something -> change STATE -> save() -> render()
-   ===================================================================== */
 
 // ---------- 1. DATA ----------
-const KEY = "rosari-v1";               // the name our data is stored under in localStorage
+const KEY = "stocked-v1";               
 const CATS = [
   { id: "produce",   emoji: "🥬", name: "Fresh Produce" },
   { id: "staples",   emoji: "🍚", name: "Staples" },
