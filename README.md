@@ -104,8 +104,6 @@ Stocked is part of my journey into frontend development and JavaScript.
 | Conditional logic | Dynamic UI updates | Responsive design |
 | Local storage | | GitHub Pages deployment |
 
-The first version was built with AI assistance. Now I am going back through the code line by line, working out how each part does its job, and improving it with my own hands. That is where the real learning happens.
-
 ---
 
 ## What could come next
@@ -124,6 +122,6 @@ The first version was built with AI assistance. Now I am going back through the 
 ## Built by
 
 **Naomi Kerubo Bosire**
-Actuarial Scientist turned Machine Learning and AI Engineer
+Machine Learning and AI Engineer
 
 [GitHub](https://github.com/kerubobosire254)
